@@ -7,7 +7,7 @@ public class Label {
         if (name == null || name.trim().isEmpty()) {
             throw new IllegalArgumentException("Label cannot be empty.");
         }
-        this.name = name;
+        this.name = name.trim().toLowerCase();
     }
 
     public String getName() {
