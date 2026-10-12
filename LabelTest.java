@@ -7,13 +7,13 @@ public class LabelTest {
         Label computer = new Label(" Computer ");
     }
     public void testConstructorNull() {
-        boolean thrown = false;
+        IllegalArgumentException exception = null
         try {
             Label word = null;
         }
         catch (IllegalArgumentException e) {
-            thrown = true;
+            exception = e;
         }
-        assertTrue(thrown);
+        assertNotNull(exception);
     }
 }
