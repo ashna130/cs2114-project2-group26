@@ -5,6 +5,7 @@ Reflection:
 - What changed in LinkedChain?
 - What happened to unknowns?
 - What doesn't work yet?
+
 Next Steps:  
 - What is left to finish MVP?
 - Which stretch goals will be attempted?
