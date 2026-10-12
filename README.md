@@ -15,3 +15,11 @@ Next Steps:
 Attribution Table:  
 | File | Team Member | Contribution |
 | -------- | -------- | -------- |
+| Label.java | Ashna | Created constructor and methods for class |
+| Task.java | Ashna | Created constructor for class |
+| CompletedEntry.java | | |
+| LooseEnds.java | | |
+|LabelTest.java | | |
+| TaskTest.java | | |
+| CompletedEntryTest.java | | |
+| LooseEndsTest.java | | |
