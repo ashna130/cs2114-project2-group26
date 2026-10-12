@@ -12,3 +12,6 @@ Next Steps:
 - What new tests are needed?
 - Who does what?
 
+Attribution Table:  
+| File | Team Member | Contribution |
+| -------- | -------- | -------- |
