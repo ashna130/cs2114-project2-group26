@@ -1,7 +1,7 @@
 import java.util.Objects;
 
 public class Label {
-    private String name
+    private String name;
 
     public Label(String name) {
         if (name == null || name.trim().isEmpty()) {
@@ -19,7 +19,7 @@ public class Label {
         if (this == o) {
             return true;
         }
-        if (o == null || this.getClass != o.getClass()) {
+        if (o == null || this.getClass() != o.getClass()) {
             return false;
         }
         Label other = (Label) o;
