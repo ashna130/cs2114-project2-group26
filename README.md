@@ -12,10 +12,6 @@ which labels you keep avoiding.
 
 ## How to compile and run
 
-All source files are in the repository root (default package). Tests use
-**JUnit 4.13**; the jars are in `lib/` (`junit-4.13.2.jar`,
-`hamcrest-core-1.3.jar`).
-
 ### In Eclipse
 1. File → Import → General → *Existing Projects into Workspace* (or create a
    new Java project and point it at this folder).
