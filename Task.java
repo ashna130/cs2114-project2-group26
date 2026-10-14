@@ -54,5 +54,23 @@ public class Task {
         return true;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!this.getClass().equals(o.getClass())) {
+            return false;
+        }
+        Task other = (Task) o;
+        if (!this.deception.equals(other.getDescription()) 
+            || this.minutes != other.getMinutes() 
+            || !this.energy.equals(other.getEnergy())
+            || !this.labels.equals(other.getLabels())) {
+                return false;
+        }
+        return true;
+    }
+
     
 }
