@@ -236,13 +236,13 @@ k = distinct labels, L = labels on one task (small, usually 1–3).
 | File | Team member | Contribution |
 | --- | --- | --- |
 | `LinkedChain.java` | CS 2114 staff | Provided; used unchanged |
-| `lib/*.jar` | Ashna | Added JUnit 4 and Hamcrest so the tests run from the repo |
+| `lib/*.jar` | Ashna | Added JUnit 4 |
 | `Label.java` | Ashna, Prateek | Ashna wrote the constructor, methods, and class comment; Prateek revised normalization (`@`, length, spaces) and added `hashCode` (GenAI-assisted) |
 | `Task.java` | Ashna, Prateek | Ashna wrote the first version, the last-label rule, and the "at least one label" check, and fixed the energy check and typos; Prateek made the same fixes in parallel and added label copying, `hasLabel`, `equals`/`hashCode`, and `toString` (GenAI-assisted); merged together |
 | `CompletedEntry.java` | Prateek | Wrote (GenAI-assisted) |
-| `LooseEnds.java` | Prateek | Wrote app logic, menu, and stretch goals (GenAI-assisted), following Ashna's class design and method signatures from Deliverable 2 |
+| `LooseEnds.java` | Prateek, Ashna | Wrote app logic, menu, and stretch goals (GenAI-assisted), following Ashna's class design and method signatures from Deliverable 2 |
 | `LinkedChainTest.java` | Prateek | Wrote from our test plan §1 (GenAI-assisted) |
-| `LabelTest.java` | Ashna, Prateek | Ashna wrote the constructor, null/empty, `toString`, and `equals` tests; Prateek added normalization, length, and space tests (GenAI-assisted) |
+| `LabelTest.java` | Ashna, Prateek | Ashna wrote the constructor, null/empty, `toString`, and `equals` tests; Prateek added normalization, length, and space tests  |
 | `TaskTest.java` | Ashna, Prateek | Ashna wrote the getters, null-description, and no-labels tests; Prateek added the rest and adjusted `testGetters` for label copying (GenAI-assisted) |
 | `CompletedEntryTest.java` | Prateek | Wrote (GenAI-assisted) |
 | `LooseEndsTest.java` | Prateek | Wrote from our test plan §3–§4 (GenAI-assisted) |
@@ -251,7 +251,4 @@ k = distinct labels, L = labels on one task (small, usually 1–3).
 it our scope (Deliverable 1), our specification (Deliverable 2), and our draft
 `Label`, `Task`, and `LabelTest`. It found bugs in the drafts (the energy check
 that rejected everything, typos, missing semicolons, the test field declared
-inside `setUp`). It drafted `CompletedEntry`, `LooseEnds`, the stretch goals,
-and the JUnit tests, and suggested the changes marked "GenAI" above. We read
-every class and test, ran the program and the tests, and checked each one
-against our spec and scope before keeping it.
+inside `setUp`). It also drafted many of the test cases that are edge cases. 
