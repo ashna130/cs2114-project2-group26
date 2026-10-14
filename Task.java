@@ -21,4 +21,38 @@ public class Task {
         this.energy = engergy.toLowerCase();
         this.labels = labels;
     }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public int getMinutes() {
+        return minutes;
+    }
+
+    public String getEnergy() {
+        return energy;
+    }
+
+    public LinkedChain<Label> getLabels() {
+        return labels;
+    }
+
+    public boolean addLabel(Label newLabel) {
+        if (label == null || labels.contains(newLabel)) {
+            return false;
+        }
+        labels.add(newLabel);
+        return true;
+    }
+
+    public boolean removeLabel(Label newLabel) {
+        if (label == null || labels.size() <= 1 || !labels.contains(newLabel)) {
+            return false;
+        }
+        labels.remove(newLabel);
+        return true;
+    }
+
+    
 }
