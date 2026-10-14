@@ -1,5 +1,8 @@
 import java.util.Objects;
 
+/**
+ * Describes the task with a tag.
+ */
 public class Label {
     private String name;
 
