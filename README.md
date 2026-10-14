@@ -1,5 +1,5 @@
 # cs2114-project2-group26
-LooseEnds  
+# LooseEnds  
 Reflection:  
 - What changed from spec?
 - What changed in LinkedChain?
