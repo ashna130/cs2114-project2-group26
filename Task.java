@@ -1,5 +1,8 @@
 import java.util.Objects;
 
+/**
+ * Creates the tasks the user adds, storing certain attributes.
+ */
 public class Task {
     private String description;
     private int minutes;
