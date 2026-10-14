@@ -14,8 +14,11 @@ public class Task {
         if (minutes < 1 || minutes > 480) {
             throw new IllegalArgumentException("Minutes must be between 1 and 480.");
         }
-        if (energy == null || !energy.toLowerCase().equals("low") || !energy.toLowerCase().equals("high")) {
+        if (energy == null || !(energy.toLowerCase().equals("low") || energy.toLowerCase().equals("high"))) {
             throw new IllegalArgumentException("Energy must be either low or high.");
+        }
+        if (labels.size() < 1) {
+            throw new IllegalArgumentException("Must include at least one label.");
         }
         this.description = description;
         this.minutes = minutes;
