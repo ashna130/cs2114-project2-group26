@@ -10,6 +10,13 @@ at my laptop, tired") and **What now?** hands you one random task that fits.
 Finished tasks go into a done pile that shows what you closed this week and
 which labels you keep avoiding.
 
+## System diagram
+
+![Loose Ends system diagram](system-diagram.png)
+
+`LooseEnds` owns the three bags. Every bag, and each task's own label list,
+is the same provided `LinkedChain<T>`, built from `Node<T>` objects.
+
 ## How to compile and run
 
 ### In Eclipse
