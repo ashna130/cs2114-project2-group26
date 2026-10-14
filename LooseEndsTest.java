@@ -16,7 +16,7 @@ import org.junit.Test;
  * tests and scripted "manual" input through the menu).
  *
  * @author Prateek, Ashna
- * @version October 2026
+ * @version October 14, 2026
  */
 public class LooseEndsTest
 {

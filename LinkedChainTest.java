@@ -9,7 +9,7 @@ import org.junit.Test;
  * show the chain is generic.
  *
  * @author Prateek
- * @version October 2026
+ * @version October 14, 2026
  */
 public class LinkedChainTest
 {

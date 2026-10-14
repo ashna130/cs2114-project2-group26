@@ -6,7 +6,7 @@ import static org.junit.Assert.*;
  * Tests the methods of the Label class.
  *
  * @author Ashna, Prateek
- * @version October 2026
+ * @version October 14, 2026
  */
 public class LabelTest {
     private Label computer;

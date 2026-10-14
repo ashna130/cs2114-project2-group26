@@ -27,7 +27,7 @@ import java.util.Scanner;
  * delete or complete.
  *
  * @author Prateek, Ashna
- * @version October 2026
+ * @version October 14, 2026
  */
 public class LooseEnds
 {

@@ -5,7 +5,7 @@
  * the name is lower-cased, so " @Laptop " and "laptop" are the same label.
  *
  * @author Ashna, Prateek
- * @version October 2026
+ * @version October 14, 2026
  */
 public class Label
 {

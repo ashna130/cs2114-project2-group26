@@ -9,7 +9,7 @@ import org.junit.Test;
  * case for each public method.
  *
  * @author Prateek
- * @version October 2026
+ * @version October 14, 2026
  */
 public class CompletedEntryTest
 {

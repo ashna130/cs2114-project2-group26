@@ -1,2 +1,3 @@
+# compiled Java files and macOS folder files
 *.class
 .DS_Store
