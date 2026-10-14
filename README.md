@@ -251,4 +251,5 @@ k = distinct labels, L = labels on one task (small, usually 1–3).
 it our scope (Deliverable 1), our specification (Deliverable 2), and our draft
 `Label`, `Task`, and `LabelTest`. It found bugs in the drafts (the energy check
 that rejected everything, typos, missing semicolons, the test field declared
-inside `setUp`). It also drafted many of the test cases that are edge cases. 
+inside `setUp`). It also drafted many of the test cases that are edge cases, as well as the
+new Big O notations. 
