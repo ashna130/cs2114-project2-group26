@@ -1,6 +1,4 @@
-import static org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.Assert.*;
 
 /**
  * Tests the methods of the Label class.
@@ -23,7 +21,7 @@ public class LabelTest {
      * Tests constructor when name is null.
      */
     public void testNullName() {
-        IllegalArgumentException exception = null
+        IllegalArgumentException exception = null;
         try {
             Label word = new Label(null);
         }
@@ -36,7 +34,7 @@ public class LabelTest {
      * Tests constructor when name is empty.
      */
     public void testEmptyName() {
-        IllegalArgumentException exception = null
+        IllegalArgumentException exception = null;
         try {
             Label word = new Label("  ");
         }

@@ -1,5 +1,3 @@
-import java.util.Objects;
-
 /**
  * Creates the tasks the user adds, storing certain attributes.
  */
@@ -21,7 +19,7 @@ public class Task {
         }
         this.description = description;
         this.minutes = minutes;
-        this.energy = engergy.toLowerCase();
+        this.energy = energy.toLowerCase();
         this.labels = labels;
     }
 
@@ -42,7 +40,7 @@ public class Task {
     }
 
     public boolean addLabel(Label newLabel) {
-        if (label == null || labels.contains(newLabel)) {
+        if (newLabel == null || labels.contains(newLabel)) {
             return false;
         }
         labels.add(newLabel);
@@ -50,7 +48,7 @@ public class Task {
     }
 
     public boolean removeLabel(Label newLabel) {
-        if (label == null || labels.size() <= 1 || !labels.contains(newLabel)) {
+        if (newLabel == null || labels.size() <= 1 || !labels.contains(newLabel)) {
             return false;
         }
         labels.remove(newLabel);
@@ -66,7 +64,7 @@ public class Task {
             return false;
         }
         Task other = (Task) o;
-        if (!this.deception.equals(other.getDescription()) 
+        if (!this.description.equals(other.getDescription()) 
             || this.minutes != other.getMinutes() 
             || !this.energy.equals(other.getEnergy())
             || !this.labels.equals(other.getLabels())) {
