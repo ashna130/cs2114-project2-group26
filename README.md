@@ -19,7 +19,7 @@ Attribution Table:
 | Task.java | Ashna | Created constructor for class |
 | CompletedEntry.java | | |
 | LooseEnds.java | | |
-|LabelTest.java | Ashna | |
+|LabelTest.java | Ashna | Wrote test cases |
 | TaskTest.java | Ashna | |
 | CompletedEntryTest.java | | |
 | LooseEndsTest.java | | |
