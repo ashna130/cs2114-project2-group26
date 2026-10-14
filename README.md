@@ -113,15 +113,15 @@ Each change says where it came from.
 - **Blank label in "What now?" means any label.** The scope asked for a label
   every time, but sometimes you can do things anywhere. *(GenAI suggestion,
   reviewed by Prateek)*
-- **`hashCode`** was added to `Label`, `Task`, and `CompletedEntry` to match
-  their `equals`. `Task.equals` compares label chains itself (ignoring order)
-  because `LinkedChain` has no `equals`. *(GenAI suggestion)*
+- **`Task.equals` compares label chains itself** (ignoring order) because
+  `LinkedChain` has no `equals`. *(GenAI suggestion, reviewed by Prateek)*
 
 **Where validation lives:** as the spec planned.
-- **Menu (`LooseEnds`)** re-prompts every bad field (blank description;
-  `thirty`, `abt 20`, 0, -15, 100000 for minutes; bad energy; blank or
-  200-character labels; out-of-range, letter, very long, or Ctrl-D menu
-  input). It keeps what was already typed.
+- **Menu (`LooseEnds`)** says what was wrong and re-prompts every bad field:
+  blank description; `thirty`, `abt 20`, blank, 0, -15, 100000 for minutes
+  (e.g. `"thirty" is not a number`, `-15 is out of range`); bad energy; blank
+  or 200-character labels; out-of-range, letter, very long, or Ctrl-D menu
+  input. It keeps what was already typed.
 - **Constructors** throw so an invalid object can't exist.
 - **`Task`** treats a repeated label as a no-op and returns `false`.
 - **`completeTask`/`deleteTask`** only act if `remove` returned `true`, so
@@ -131,7 +131,11 @@ Each change says where it came from.
   type `cancel`, or press Enter at "Task number" (scope's non-functional
   requirement).
 
-**Test cases:** every case in our test plan is covered. The §4 "manual input"
+**Test cases:** every case in our test plan is covered. Every public method
+has a normal test and a bad-input test. Getters and `toString`
+take no arguments, so their "bad input" is an object built from edge values
+(1 and 480 minutes, untrimmed text like `"  Email advisor "`, mixed-case labels)
+plus the inputs the constructor must reject. The §4 "manual input"
 cases are automated through `run(Scanner, PrintStream)` with scripted input,
 so they run with the other tests. All **112** tests pass.
 - **JUnit 4 instead of JUnit 5.** Ashna added the JUnit 4 jars to `lib/` and
@@ -241,8 +245,8 @@ k = distinct labels, L = labels on one task (small, usually 1–3).
 | --- | --- | --- |
 | `LinkedChain.java` | CS 2114 staff | Provided; used unchanged |
 | `lib/*.jar` | Ashna | Added JUnit 4 and Hamcrest so the tests run from the repo |
-| `Label.java` | Ashna, Prateek | Ashna wrote the constructor, methods, and class comment; Prateek revised normalization (`@`, length, spaces) and added `hashCode` (GenAI-assisted) |
-| `Task.java` | Ashna, Prateek | Ashna wrote the first version, the last-label rule, and the "at least one label" check, and fixed the energy check and typos; Prateek made the same fixes in parallel and added label copying, `hasLabel`, `equals`/`hashCode`, and `toString` (GenAI-assisted); merged together |
+| `Label.java` | Ashna, Prateek | Ashna wrote the constructor, methods, and class comment; Prateek revised normalization (`@`, length, spaces) (GenAI-assisted) |
+| `Task.java` | Ashna, Prateek | Ashna wrote the first version, the last-label rule, and the "at least one label" check, and fixed the energy check and typos; Prateek made the same fixes in parallel and added label copying, `hasLabel`, `equals`, and `toString` (GenAI-assisted); merged together |
 | `CompletedEntry.java` | Prateek | Wrote (GenAI-assisted) |
 | `LooseEnds.java` | Prateek | Wrote app logic, menu, and stretch goals (GenAI-assisted), following Ashna's class design and method signatures from Deliverable 2 |
 | `LinkedChainTest.java` | Prateek | Wrote from our test plan §1 (GenAI-assisted) |

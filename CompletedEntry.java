@@ -74,17 +74,6 @@ public class CompletedEntry
     }
 
     /**
-     * Hash code consistent with equals.
-     *
-     * @return a hash code for this entry
-     */
-    @Override
-    public int hashCode()
-    {
-        return 31 * task.hashCode() + completedDate.hashCode();
-    }
-
-    /**
      * Describes the entry, e.g. "2026-10-14: Email advisor (15 min, low)".
      *
      * @return a readable description of the entry

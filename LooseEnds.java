@@ -53,6 +53,11 @@ public class LooseEnds
     private Task undoTask;
     private CompletedEntry undoEntry; // null if the last action was delete
 
+    // Used by the text menu.
+    private Scanner in;
+    private PrintStream out;
+    private boolean quit;
+
     /**
      * Creates an empty app with a random roulette.
      */
@@ -72,7 +77,14 @@ public class LooseEnds
         openTasks = new LinkedChain<Task>();
         labelBag = new LinkedChain<Label>();
         donePile = new LinkedChain<CompletedEntry>();
-        this.random = (random == null) ? new Random() : random;
+        if (random == null)
+        {
+            this.random = new Random();
+        }
+        else
+        {
+            this.random = random;
+        }
         hasLastQuery = false;
     }
 
@@ -263,7 +275,11 @@ public class LooseEnds
         {
             return null;
         }
-        return (undoEntry == null ? "deleted: " : "completed: ") + undoTask;
+        if (undoEntry == null)
+        {
+            return "deleted: " + undoTask;
+        }
+        return "completed: " + undoTask;
     }
 
     /**
@@ -352,7 +368,11 @@ public class LooseEnds
         {
             return "label";
         }
-        return (timeOk <= energyOk) ? "time" : "energy";
+        if (timeOk <= energyOk)
+        {
+            return "time";
+        }
+        return "energy";
     }
 
     /**
@@ -721,7 +741,7 @@ public class LooseEnds
     // ------------------------------------------------------------------
 
     /**
-     * Runs the menu on standard input and output.
+     * Runs the menu using the keyboard and the screen.
      */
     public void run()
     {
@@ -730,51 +750,67 @@ public class LooseEnds
 
     /**
      * Runs the menu loop until the user quits or input ends (Ctrl-D).
-     * Bad input is reported and re-prompted; it never crashes the loop.
-     * Typing "cancel" inside any action goes back to the menu.
+     * main() passes the keyboard and the screen; the tests pass typed
+     * text and capture what is printed. Bad input is reported and asked
+     * again; it never crashes the loop. Typing "cancel" at any prompt
+     * goes back to the menu.
      *
-     * @param in  where to read user input
-     * @param out where to print
+     * @param input  where to read what the user types
+     * @param output where to print
      */
-    public void run(Scanner in, PrintStream out)
+    public void run(Scanner input, PrintStream output)
     {
-        if (in == null || out == null)
+        if (input == null || output == null)
         {
             return;
         }
+        in = input;
+        out = output;
+        quit = false;
         out.println("Welcome to Loose Ends!");
-        out.println("(Type '" + CANCEL + "' at any prompt to go back.)");
-        boolean running = true;
-        while (running)
+        out.println("(Type 'cancel' at any prompt to go back to the menu.)");
+        while (!quit)
         {
-            printMenu(out);
-            String line = readLine(in, out, "Choose an option: ");
-            if (line == null)
+            printMenu();
+            String line = ask("Choose an option: ");
+            if (line != null)
             {
-                break;
-            }
-            try
-            {
-                running = handleChoice(parseMenuChoice(line), in, out);
-            }
-            catch (CancelException e)
-            {
-                out.println("Cancelled. Back to the menu.");
-            }
-            catch (EndOfInputException e)
-            {
-                running = false;
+                handleChoice(parseMenuChoice(line));
             }
         }
         out.println("Goodbye!");
     }
 
     /**
-     * Prints the main menu.
+     * Prints a prompt and reads one line, with spaces trimmed.
+     * If input has ended (Ctrl-D), sets quit so the program stops.
+     * If the user typed "cancel", says so.
      *
-     * @param out where to print
+     * @param prompt the text to show
+     * @return the line, or null if input ended or the user cancelled
      */
-    private void printMenu(PrintStream out)
+    private String ask(String prompt)
+    {
+        out.print(prompt);
+        if (!in.hasNextLine())
+        {
+            out.println();
+            quit = true;
+            return null;
+        }
+        String line = in.nextLine().trim();
+        if (line.equalsIgnoreCase(CANCEL))
+        {
+            out.println("Cancelled. Back to the menu.");
+            return null;
+        }
+        return line;
+    }
+
+    /**
+     * Prints the main menu.
+     */
+    private void printMenu()
     {
         out.println();
         out.println("Open tasks: " + countOpen() + "   Done: " + countDone());
@@ -797,103 +833,122 @@ public class LooseEnds
     /**
      * Turns menu input into a choice number.
      *
-     * @param line the trimmed input
+     * @param line the input
      * @return the choice, or -1 if it is not a number or too long
      */
     private int parseMenuChoice(String line)
     {
-        if (line.length() > MAX_MENU_INPUT)
+        if (line.length() > MAX_MENU_INPUT || !isWholeNumber(line))
         {
             return -1;
         }
-        return parseIntOr(line, -1);
+        return Integer.parseInt(line);
     }
 
     /**
      * Carries out one menu choice.
      *
      * @param choice the menu number
-     * @param in     user input
-     * @param out    where to print
-     * @return false if the user chose to quit
      */
-    private boolean handleChoice(int choice, Scanner in, PrintStream out)
+    private void handleChoice(int choice)
     {
-        switch (choice)
+        if (choice == 0)
         {
-            case 0:
-                return false;
-            case 1:
-                menuAddTask(in, out);
-                break;
-            case 2:
-                listOpen(out);
-                break;
-            case 3:
-                menuWhatNow(in, out);
-                break;
-            case 4:
-                showPick(another(), out, hasLastQuery
-                    ? "No other task matches." : "Use What now? first.");
-                break;
-            case 5:
-                menuRemove(in, out, true);
-                break;
-            case 6:
-                menuRemove(in, out, false);
-                break;
-            case 7:
-                menuChangeLabel(in, out, true);
-                break;
-            case 8:
-                menuChangeLabel(in, out, false);
-                break;
-            case 9:
-                menuCountLabel(in, out);
-                break;
-            case 10:
-                out.println(doneSummary());
-                if (!donePile.isEmpty())
-                {
-                    out.println();
-                    out.println(weeklySummary());
-                }
-                break;
-            case 11:
-                clearDone();
-                out.println("Done pile cleared.");
-                break;
-            case 12:
-                out.println(avoidanceReport());
-                break;
-            case 13:
-                menuUndo(out);
-                break;
-            default:
-                out.println("Please enter a number from 0 to 13.");
+            quit = true;
         }
-        return true;
+        else if (choice == 1)
+        {
+            menuAddTask();
+        }
+        else if (choice == 2)
+        {
+            listOpen();
+        }
+        else if (choice == 3)
+        {
+            menuWhatNow();
+        }
+        else if (choice == 4)
+        {
+            menuAnother();
+        }
+        else if (choice == 5)
+        {
+            menuRemove(true);
+        }
+        else if (choice == 6)
+        {
+            menuRemove(false);
+        }
+        else if (choice == 7)
+        {
+            menuChangeLabel(true);
+        }
+        else if (choice == 8)
+        {
+            menuChangeLabel(false);
+        }
+        else if (choice == 9)
+        {
+            menuCountLabel();
+        }
+        else if (choice == 10)
+        {
+            menuDonePile();
+        }
+        else if (choice == 11)
+        {
+            clearDone();
+            out.println("Done pile cleared.");
+        }
+        else if (choice == 12)
+        {
+            out.println(avoidanceReport());
+        }
+        else if (choice == 13)
+        {
+            menuUndo();
+        }
+        else
+        {
+            out.println("Please enter a number from 0 to 13.");
+        }
     }
 
     /**
-     * Asks for every task field, re-prompting on bad input while keeping
+     * Asks for every task field, asking again on bad input while keeping
      * what was already typed.
-     *
-     * @param in  user input
-     * @param out where to print
      */
-    private void menuAddTask(Scanner in, PrintStream out)
+    private void menuAddTask()
     {
-        String desc = promptDescription(in, out);
-        int minutes = promptMinutes(in, out, "Minutes it takes (1-480): ");
-        String energy = promptEnergy(in, out, "Energy (low/high): ");
-        LinkedChain<Label> labels = promptLabels(in, out);
-
+        String desc = askDescription();
+        if (desc == null)
+        {
+            return;
+        }
+        int minutes = askMinutes("Minutes it takes (1-480): ");
+        if (minutes == -1)
+        {
+            return;
+        }
+        String energy = askEnergy("Energy (low/high): ");
+        if (energy == null)
+        {
+            return;
+        }
+        LinkedChain<Label> labels = askLabels();
+        if (labels == null)
+        {
+            return;
+        }
         if (isOpen(new Task(desc, minutes, energy, labels)))
         {
-            String answer = mustRead(in, out,
-                "You already have one that looks like this. "
+            String answer = ask("You already have one that looks like this. "
                 + "Add anyway? (y/n): ");
+            if (answer == null)
+            {
+                return;
+            }
             if (!answer.toLowerCase().startsWith("y"))
             {
                 out.println("Not added.");
@@ -904,50 +959,64 @@ public class LooseEnds
     }
 
     /**
-     * Runs bag roulette from the menu. If nothing matches, names the
-     * most restrictive filter and offers to loosen it.
-     *
-     * @param in  user input
-     * @param out where to print
+     * Runs bag roulette. If nothing matches, names the most restrictive
+     * filter and offers to loosen it.
      */
-    private void menuWhatNow(Scanner in, PrintStream out)
+    private void menuWhatNow()
     {
         if (openTasks.isEmpty())
         {
             out.println("Nothing in the pile yet. Add a task first!");
             return;
         }
-        int minutes = promptMinutes(in, out,
-            "How many minutes do you have (1-480)? ");
-        String energy = promptEnergy(in, out, "Energy right now (low/high): ");
-        Label label = null;
-        while (true)
+        int minutes = askMinutes("How many minutes do you have (1-480)? ");
+        if (minutes == -1)
         {
-            String text = mustRead(in, out,
-                "Where are you / label (blank for any): ");
+            return;
+        }
+        String energy = askEnergy("Energy right now (low/high): ");
+        if (energy == null)
+        {
+            return;
+        }
+        Label label = null;
+        boolean done = false;
+        while (!done)
+        {
+            String text = ask("Where are you / label (blank for any): ");
+            if (text == null)
+            {
+                return;
+            }
             if (text.isEmpty())
             {
-                break;
+                done = true;
             }
-            label = makeLabel(text);
-            if (label != null)
+            else
             {
-                break;
+                label = makeLabel(text);
+                if (label == null)
+                {
+                    out.println("That is not a valid label.");
+                }
+                else
+                {
+                    done = true;
+                }
             }
-            out.println("That is not a valid label.");
         }
 
         Task pick = whatNow(minutes, label, energy);
         if (pick != null)
         {
-            showPick(pick, out, null);
+            out.println("How about: " + pick);
             return;
         }
         String tight = mostRestrictiveFilter(minutes, label, energy);
         out.println("Nothing fits right now. Your " + tight
             + " filter is the most restrictive.");
-        String answer = mustRead(in, out, "Loosen it? (y/n): ");
-        if (!answer.toLowerCase().startsWith("y"))
+        String answer = ask("Loosen it? (y/n): ");
+        if (answer == null || !answer.toLowerCase().startsWith("y"))
         {
             return;
         }
@@ -963,58 +1032,73 @@ public class LooseEnds
         {
             energy = "high";
         }
-        showPick(whatNow(minutes, label, energy), out,
-            "Still nothing fits. Try adding more tasks.");
+        pick = whatNow(minutes, label, energy);
+        if (pick == null)
+        {
+            out.println("Still nothing fits. Try adding more tasks.");
+        }
+        else
+        {
+            out.println("How about: " + pick);
+        }
     }
 
     /**
-     * Prints a roulette result.
-     *
-     * @param pick        the chosen task, or null
-     * @param out         where to print
-     * @param noneMessage what to say if pick is null
+     * "Give me a different one" from the menu.
      */
-    private void showPick(Task pick, PrintStream out, String noneMessage)
+    private void menuAnother()
     {
-        out.println(pick == null ? noneMessage : "How about: " + pick);
+        if (!hasLastQuery)
+        {
+            out.println("Use What now? first.");
+            return;
+        }
+        Task pick = another();
+        if (pick == null)
+        {
+            out.println("No other task matches.");
+        }
+        else
+        {
+            out.println("How about: " + pick);
+        }
     }
 
     /**
      * Completes or deletes a task the user picks from the list.
      *
-     * @param in       user input
-     * @param out      where to print
      * @param complete true to complete, false to delete
      */
-    private void menuRemove(Scanner in, PrintStream out, boolean complete)
+    private void menuRemove(boolean complete)
     {
-        Task t = chooseTask(in, out);
+        Task t = chooseTask();
         if (t == null)
         {
             return;
         }
-        boolean done = complete ? completeTask(t) : deleteTask(t);
-        if (done)
+        if (complete && completeTask(t))
         {
-            out.println((complete ? "Nice! Completed: " : "Deleted: ") + t);
+            out.println("Nice! Completed: " + t);
+        }
+        else if (!complete && deleteTask(t))
+        {
+            out.println("Deleted: " + t);
         }
         else
         {
             out.println("That task is already gone.");
-            listOpen(out);
+            listOpen();
         }
     }
 
     /**
      * Adds or removes a label on a task the user picks.
      *
-     * @param in  user input
-     * @param out where to print
      * @param add true to add, false to remove
      */
-    private void menuChangeLabel(Scanner in, PrintStream out, boolean add)
+    private void menuChangeLabel(boolean add)
     {
-        Task t = chooseTask(in, out);
+        Task t = chooseTask();
         if (t == null)
         {
             return;
@@ -1023,7 +1107,11 @@ public class LooseEnds
         String text = "";
         while (label == null)
         {
-            text = mustRead(in, out, "Label: ");
+            text = ask("Label: ");
+            if (text == null)
+            {
+                return;
+            }
             label = makeLabel(text);
             if (label == null)
             {
@@ -1033,8 +1121,14 @@ public class LooseEnds
         }
         if (add)
         {
-            out.println(addLabel(t, text) ? "Label added."
-                : "That task already has " + label + ".");
+            if (addLabel(t, text))
+            {
+                out.println("Label added.");
+            }
+            else
+            {
+                out.println("That task already has " + label + ".");
+            }
         }
         else if (removeLabel(t, text))
         {
@@ -1053,15 +1147,17 @@ public class LooseEnds
 
     /**
      * Counts open tasks with a label the user types.
-     *
-     * @param in  user input
-     * @param out where to print
      */
-    private void menuCountLabel(Scanner in, PrintStream out)
+    private void menuCountLabel()
     {
         while (true)
         {
-            Label label = makeLabel(mustRead(in, out, "Label: "));
+            String text = ask("Label: ");
+            if (text == null)
+            {
+                return;
+            }
+            Label label = makeLabel(text);
             if (label != null)
             {
                 out.println(countLabel(label) + " open task(s) have "
@@ -1073,11 +1169,22 @@ public class LooseEnds
     }
 
     /**
-     * Undoes the last delete or complete from the menu.
-     *
-     * @param out where to print
+     * Shows the done pile and, if it is not empty, the weekly summary.
      */
-    private void menuUndo(PrintStream out)
+    private void menuDonePile()
+    {
+        out.println(doneSummary());
+        if (!donePile.isEmpty())
+        {
+            out.println();
+            out.println(weeklySummary());
+        }
+    }
+
+    /**
+     * Undoes the last delete or complete from the menu.
+     */
+    private void menuUndo()
     {
         String what = undoDescription();
         if (what == null)
@@ -1096,10 +1203,8 @@ public class LooseEnds
 
     /**
      * Prints the open tasks, numbered from 1.
-     *
-     * @param out where to print
      */
-    private void listOpen(PrintStream out)
+    private void listOpen()
     {
         Task[] tasks = getOpenTasks();
         if (tasks.length == 0)
@@ -1116,12 +1221,10 @@ public class LooseEnds
     /**
      * Lets the user pick an open task by number.
      *
-     * @param in  user input
-     * @param out where to print
      * @return the chosen task, or null if there are none or the user
-     *         cancelled with a blank line
+     *         cancelled (blank line or "cancel")
      */
-    private Task chooseTask(Scanner in, PrintStream out)
+    private Task chooseTask()
     {
         Task[] tasks = getOpenTasks();
         if (tasks.length == 0)
@@ -1129,38 +1232,42 @@ public class LooseEnds
             out.println("No open tasks. Nothing in the pile yet.");
             return null;
         }
-        listOpen(out);
+        listOpen();
         while (true)
         {
-            String text = mustRead(in, out,
-                "Task number (blank to cancel): ");
-            if (text.isEmpty())
+            String text = ask("Task number (blank to cancel): ");
+            if (text == null || text.isEmpty())
             {
                 return null;
             }
-            int n = parseIntOr(text, -1);
-            if (n >= 1 && n <= tasks.length)
+            if (isWholeNumber(text) && text.length() <= 9)
             {
-                return tasks[n - 1];
+                int n = Integer.parseInt(text);
+                if (n >= 1 && n <= tasks.length)
+                {
+                    return tasks[n - 1];
+                }
             }
             out.println("No task " + shorten(text) + ". Please enter a "
                 + "number from 1 to " + tasks.length + ".");
-            listOpen(out);
+            listOpen();
         }
     }
 
     /**
      * Asks for a description until it is not blank and not too long.
      *
-     * @param in  user input
-     * @param out where to print
-     * @return the description
+     * @return the description, or null if cancelled
      */
-    private String promptDescription(Scanner in, PrintStream out)
+    private String askDescription()
     {
         while (true)
         {
-            String text = mustRead(in, out, "Description: ");
+            String text = ask("Description: ");
+            if (text == null)
+            {
+                return null;
+            }
             if (text.isEmpty())
             {
                 out.println("A task needs a description.");
@@ -1178,41 +1285,63 @@ public class LooseEnds
     }
 
     /**
-     * Asks for minutes until a whole number from 1 to 480 is typed.
+     * Asks for minutes until a whole number from 1 to 480 is typed. Says
+     * whether the input was blank, not a number, or out of range.
      *
-     * @param in     user input
-     * @param out    where to print
-     * @param prompt the prompt text
-     * @return the minutes
+     * @param prompt the text to show
+     * @return the minutes, or -1 if cancelled
      */
-    private int promptMinutes(Scanner in, PrintStream out, String prompt)
+    private int askMinutes(String prompt)
     {
+        String expected = "Please enter a whole number from "
+            + Task.MIN_MINUTES + " to " + Task.MAX_MINUTES + ".";
         while (true)
         {
-            String text = mustRead(in, out, prompt);
-            int n = parseIntOr(text, -1);
-            if (n >= Task.MIN_MINUTES && n <= Task.MAX_MINUTES)
+            String text = ask(prompt);
+            if (text == null)
             {
-                return n;
+                return -1;
             }
-            out.println("Please enter a whole number from "
-                + Task.MIN_MINUTES + " to " + Task.MAX_MINUTES + ".");
+            if (text.isEmpty())
+            {
+                out.println("Nothing was entered. " + expected);
+            }
+            else if (!isWholeNumber(text))
+            {
+                out.println("\"" + shorten(text) + "\" is not a number. "
+                    + expected);
+            }
+            else if (text.length() > 9)
+            {
+                out.println(shorten(text) + " is out of range. " + expected);
+            }
+            else
+            {
+                int n = Integer.parseInt(text);
+                if (n >= Task.MIN_MINUTES && n <= Task.MAX_MINUTES)
+                {
+                    return n;
+                }
+                out.println(text + " is out of range. " + expected);
+            }
         }
     }
 
     /**
      * Asks for "low" or "high" until one is typed.
      *
-     * @param in     user input
-     * @param out    where to print
-     * @param prompt the prompt text
-     * @return "low" or "high"
+     * @param prompt the text to show
+     * @return "low" or "high", or null if cancelled
      */
-    private String promptEnergy(Scanner in, PrintStream out, String prompt)
+    private String askEnergy(String prompt)
     {
         while (true)
         {
-            String text = mustRead(in, out, prompt);
+            String text = ask(prompt);
+            if (text == null)
+            {
+                return null;
+            }
             if (Task.isValidEnergy(text))
             {
                 return text.toLowerCase();
@@ -1223,34 +1352,34 @@ public class LooseEnds
 
     /**
      * Asks for labels separated by spaces or commas until at least one
-     * valid label is typed. Bad labels are reported and skipped; the good
-     * ones are kept.
+     * valid label is typed. Bad labels are reported and skipped.
      *
-     * @param in  user input
-     * @param out where to print
-     * @return the labels typed (at least one)
+     * @return the labels typed (at least one), or null if cancelled
      */
-    private LinkedChain<Label> promptLabels(Scanner in, PrintStream out)
+    private LinkedChain<Label> askLabels()
     {
         LinkedChain<Label> labels = new LinkedChain<Label>();
         while (labels.isEmpty())
         {
-            String text = mustRead(in, out,
-                "Labels, e.g. @laptop @phone (at least one): ");
-            for (String part : text.split("[,\\s]+"))
+            String text = ask("Labels, e.g. @laptop @phone (at least one): ");
+            if (text == null)
             {
-                if (part.isEmpty())
+                return null;
+            }
+            String[] parts = text.replace(",", " ").split(" ");
+            for (String part : parts)
+            {
+                if (!part.isEmpty())
                 {
-                    continue;
-                }
-                Label label = makeLabel(part);
-                if (label == null)
-                {
-                    out.println("Skipping bad label: " + shorten(part));
-                }
-                else if (!labels.contains(label))
-                {
-                    labels.addToEnd(label);
+                    Label label = makeLabel(part);
+                    if (label == null)
+                    {
+                        out.println("Skipping bad label: " + shorten(part));
+                    }
+                    else if (!labels.contains(label))
+                    {
+                        labels.addToEnd(label);
+                    }
                 }
             }
             if (labels.isEmpty())
@@ -1262,6 +1391,34 @@ public class LooseEnds
     }
 
     /**
+     * Checks that text is a whole number: an optional minus sign followed
+     * by one or more digits.
+     *
+     * @param text the text to check
+     * @return true if it is a whole number
+     */
+    private boolean isWholeNumber(String text)
+    {
+        int start = 0;
+        if (text.startsWith("-"))
+        {
+            start = 1;
+        }
+        if (text.length() == start)
+        {
+            return false;
+        }
+        for (int i = start; i < text.length(); i++)
+        {
+            if (!Character.isDigit(text.charAt(i)))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
      * Shortens very long text for messages.
      *
      * @param text the text
@@ -1269,92 +1426,11 @@ public class LooseEnds
      */
     private String shorten(String text)
     {
-        return text.length() <= 40 ? text : text.substring(0, 40) + "...";
-    }
-
-    /**
-     * Parses a whole number.
-     *
-     * @param text     the text
-     * @param fallback what to return if it is not a number
-     * @return the number, or fallback
-     */
-    private int parseIntOr(String text, int fallback)
-    {
-        if (text == null || text.isEmpty() || text.length() > 9)
+        if (text.length() <= 40)
         {
-            return fallback;
+            return text;
         }
-        try
-        {
-            return Integer.parseInt(text);
-        }
-        catch (NumberFormatException e)
-        {
-            return fallback;
-        }
-    }
-
-    /**
-     * Prints a prompt and reads one trimmed line.
-     *
-     * @param in     user input
-     * @param out    where to print
-     * @param prompt the prompt text
-     * @return the trimmed line, or null at end of input
-     */
-    private String readLine(Scanner in, PrintStream out, String prompt)
-    {
-        out.print(prompt);
-        if (!in.hasNextLine())
-        {
-            out.println();
-            return null;
-        }
-        return in.nextLine().trim();
-    }
-
-    /**
-     * Reads a line inside an action. End of input stops the program and
-     * "cancel" goes back to the menu.
-     *
-     * @param in     user input
-     * @param out    where to print
-     * @param prompt the prompt text
-     * @return the trimmed line
-     * @throws EndOfInputException at end of input
-     * @throws CancelException     if the user typed "cancel"
-     */
-    private String mustRead(Scanner in, PrintStream out, String prompt)
-    {
-        String line = readLine(in, out, prompt);
-        if (line == null)
-        {
-            throw new EndOfInputException();
-        }
-        if (line.equalsIgnoreCase(CANCEL))
-        {
-            throw new CancelException();
-        }
-        return line;
-    }
-
-    /**
-     * Signals that input ended (Ctrl-D) in the middle of an action.
-     * Caught in run(), which then exits cleanly.
-     */
-    private static class EndOfInputException extends RuntimeException
-    {
-        private static final long serialVersionUID = 1L;
-    }
-
-    /**
-     * Signals that the user typed "cancel". Caught in run(), which goes
-     * back to the menu.
-     */
-    private static class CancelException extends RuntimeException
-    {
-        private static final long serialVersionUID = 1L;
+        return text.substring(0, 40) + "...";
     }
 
     /**

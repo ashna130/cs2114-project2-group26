@@ -82,17 +82,6 @@ public class Label
     }
 
     /**
-     * Hash code consistent with equals.
-     *
-     * @return a hash code based on the name
-     */
-    @Override
-    public int hashCode()
-    {
-        return name.hashCode();
-    }
-
-    /**
      * Returns the label as the user types it, e.g. "@laptop".
      *
      * @return the label with a leading '@'

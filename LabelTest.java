@@ -108,8 +108,24 @@ public class LabelTest {
     @Test
     public void testOnlyAtSign()
     {
-        assertThrows(IllegalArgumentException.class, () -> new Label("@"));
-        assertThrows(IllegalArgumentException.class, () -> new Label(" @ "));
+        try
+        {
+            new Label("@");
+            fail("Expected IllegalArgumentException");
+        }
+        catch (IllegalArgumentException e)
+        {
+            // expected
+        }
+        try
+        {
+            new Label(" @ ");
+            fail("Expected IllegalArgumentException");
+        }
+        catch (IllegalArgumentException e)
+        {
+            // expected
+        }
     }
 
     @Test
@@ -117,15 +133,29 @@ public class LabelTest {
     {
         String longest = "a".repeat(Label.MAX_LENGTH);
         assertEquals(longest, new Label(longest).getName());
-        assertThrows(IllegalArgumentException.class,
-            () -> new Label(longest + "a"));
+        try
+        {
+            new Label(longest + "a");
+            fail("Expected IllegalArgumentException");
+        }
+        catch (IllegalArgumentException e)
+        {
+            // expected
+        }
     }
 
     @Test
     public void testNameWithSpace()
     {
-        assertThrows(IllegalArgumentException.class,
-            () -> new Label("my laptop"));
+        try
+        {
+            new Label("my laptop");
+            fail("Expected IllegalArgumentException");
+        }
+        catch (IllegalArgumentException e)
+        {
+            // expected
+        }
     }
 
     @Test
@@ -139,7 +169,6 @@ public class LabelTest {
     {
         assertEquals(new Label(" @Laptop "), new Label("@laptop"));
         assertEquals(computer, computer);
-        assertEquals(computer.hashCode(), new Label("computer").hashCode());
     }
 
     @Test

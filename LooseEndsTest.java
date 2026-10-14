@@ -589,8 +589,14 @@ public class LooseEndsTest
      */
     private int occurrences(String output, String text)
     {
-        return output.split(java.util.regex.Pattern.quote(text), -1).length
-            - 1;
+        int count = 0;
+        int index = output.indexOf(text);
+        while (index != -1)
+        {
+            count++;
+            index = output.indexOf(text, index + text.length());
+        }
+        return count;
     }
 
     @Test
@@ -613,6 +619,12 @@ public class LooseEndsTest
             "1\nRead\nthirty\nabt 20\n0\n-15\n100000\n\n30\nlow\n@home\n0\n");
         assertEquals(6,
             occurrences(output, "whole number from 1 to 480"));
+        assertTrue(output.contains("\"thirty\" is not a number."));
+        assertTrue(output.contains("\"abt 20\" is not a number."));
+        assertTrue(output.contains("0 is out of range."));
+        assertTrue(output.contains("-15 is out of range."));
+        assertTrue(output.contains("100000 is out of range."));
+        assertTrue(output.contains("Nothing was entered."));
         // The description typed before the bad minutes was kept.
         assertEquals("Read", app.getOpenTasks()[0].getDescription());
         assertEquals(30, app.getOpenTasks()[0].getMinutes());

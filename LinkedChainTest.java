@@ -128,9 +128,24 @@ public class LinkedChainTest
     @Test
     public void testAddNull()
     {
-        assertThrows(IllegalArgumentException.class, () -> chain.add(null));
-        assertThrows(IllegalArgumentException.class,
-            () -> chain.addToEnd(null));
+        try
+        {
+            chain.add(null);
+            fail("Expected IllegalArgumentException");
+        }
+        catch (IllegalArgumentException e)
+        {
+            // expected
+        }
+        try
+        {
+            chain.addToEnd(null);
+            fail("Expected IllegalArgumentException");
+        }
+        catch (IllegalArgumentException e)
+        {
+            // expected
+        }
         assertEquals(0, chain.size());
     }
 
@@ -162,19 +177,57 @@ public class LinkedChainTest
     public void testToArrayBadInput()
     {
         addABC();
-        assertThrows(IllegalArgumentException.class,
-            () -> chain.toArray(null));
-        assertThrows(IllegalArgumentException.class,
-            () -> chain.toArray(new String[2]));
+        try
+        {
+            chain.toArray(null);
+            fail("Expected IllegalArgumentException");
+        }
+        catch (IllegalArgumentException e)
+        {
+            // expected
+        }
+        try
+        {
+            chain.toArray(new String[2]);
+            fail("Expected IllegalArgumentException");
+        }
+        catch (IllegalArgumentException e)
+        {
+            // expected
+        }
     }
 
     @Test
     public void testGetOutOfBounds()
     {
-        assertThrows(IndexOutOfBoundsException.class, () -> chain.get(0));
+        try
+        {
+            chain.get(0);
+            fail("Expected IndexOutOfBoundsException");
+        }
+        catch (IndexOutOfBoundsException e)
+        {
+            // expected
+        }
         chain.add("a");
-        assertThrows(IndexOutOfBoundsException.class, () -> chain.get(-1));
-        assertThrows(IndexOutOfBoundsException.class, () -> chain.get(1));
+        try
+        {
+            chain.get(-1);
+            fail("Expected IndexOutOfBoundsException");
+        }
+        catch (IndexOutOfBoundsException e)
+        {
+            // expected
+        }
+        try
+        {
+            chain.get(1);
+            fail("Expected IndexOutOfBoundsException");
+        }
+        catch (IndexOutOfBoundsException e)
+        {
+            // expected
+        }
     }
 
     @Test

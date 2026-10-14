@@ -231,21 +231,6 @@ public class Task
     }
 
     /**
-     * Hash code consistent with equals.
-     *
-     * @return a hash code for this task
-     */
-    @Override
-    public int hashCode()
-    {
-        int hash = description.toLowerCase().hashCode();
-        hash = 31 * hash + minutes;
-        hash = 31 * hash + energy.hashCode();
-        hash = 31 * hash + labels.size();
-        return hash;
-    }
-
-    /**
      * Describes the task, e.g. "Email advisor (15 min, low) @laptop".
      *
      * @return a readable description of the task
