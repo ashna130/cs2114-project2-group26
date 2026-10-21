@@ -27,7 +27,7 @@ import java.util.Scanner;
  * delete or complete.
  *
  * @author Prateek, Ashna
- * @version October 14, 2026
+ * @version October 20, 2026
  */
 public class LooseEnds
 {
@@ -218,6 +218,7 @@ public class LooseEnds
         removeLabelsFromBag(t);
         undoTask = t;
         undoEntry = null;
+        undoRecurReplace = null;
         return true;
     }
 
@@ -564,6 +565,11 @@ public class LooseEnds
     public void clearDone()
     {
         donePile.clear();
+        if (undoEntry != null) {
+            undoTask = null;
+            undoEntry = null;
+            undoRecurReplace = null;
+        }
     }
 
     /**
@@ -991,7 +997,23 @@ public class LooseEnds
         {
             return;
         }
-        if (isOpen(new Task(desc, minutes, energy, labels)))
+        Strin recurAnswer;
+        while (true) {
+            recurAnswer = ask("Does this task recur? (y/n): ";
+            if (recurAnswer == null) {
+                return;
+            }
+            if (!(recurAnswer.equalsIgnoreCase("y")
+                || recurAnswer.equalsIgnoreCase("yes")
+                || recurAnswer.equalsIgnoreCase("n")
+                || recurAnswer.equalsIgnoreCase("no")))
+            {
+                out.println("Please type y or n.");
+            }
+        }
+        boolean recurring = recurAnswer.equalsIgnoreCase("y") 
+            || recurAnswer.equalsIgnoreCase("yes")
+        if (isOpen(new Task(desc, minutes, energy, labels, recurring)))
         {
             String answer = ask("You already have one that looks like this. "
                 + "Add anyway? (y/n): ");
@@ -1005,7 +1027,7 @@ public class LooseEnds
                 return;
             }
         }
-        out.println("Added: " + addTask(desc, minutes, energy, labels));
+        out.println("Added: " + addTask(desc, minutes, energy, labels, recurring));
     }
 
     /**
