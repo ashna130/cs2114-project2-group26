@@ -23,6 +23,7 @@ public class Task
     private int minutes;
     private String energy;
     private LinkedChain<Label> labels;
+    private boolean recurring;
 
     /**
      * Creates a new task. The given labels are copied into the task's own
@@ -84,6 +85,66 @@ public class Task
     }
 
     /**
+     * Creates a new task that can be recurring.
+     *
+     * @param description what the task is; must not be blank
+     * @param minutes     how long it takes, 1 to 480
+     * @param energy      "low" or "high" (any case, surrounding spaces ok)
+     * @param labels      the labels for the task; at least one
+     * @param recurring   whether or not the task should return after completed
+     * @throws IllegalArgumentException if any value is invalid or there
+     *         are no labels
+     */
+    public Task(
+        String description,
+        int minutes,
+        String energy,
+        LinkedChain<Label> labels,
+        boolean recurring)
+    {
+        if (description == null || description.trim().isEmpty())
+        {
+            throw new IllegalArgumentException(
+                "Description cannot be empty.");
+        }
+        if (description.trim().length() > MAX_DESCRIPTION)
+        {
+            throw new IllegalArgumentException(
+                "Description cannot be longer than " + MAX_DESCRIPTION
+                + " characters.");
+        }
+        if (minutes < MIN_MINUTES || minutes > MAX_MINUTES)
+        {
+            throw new IllegalArgumentException(
+                "Minutes must be between " + MIN_MINUTES + " and "
+                + MAX_MINUTES + ".");
+        }
+        if (!isValidEnergy(energy))
+        {
+            throw new IllegalArgumentException(
+                "Energy must be either low or high.");
+        }
+        if (labels == null || labels.isEmpty())
+        {
+            throw new IllegalArgumentException(
+                "A task needs at least one label.");
+        }
+        this.description = description.trim();
+        this.minutes = minutes;
+        this.energy = energy.trim().toLowerCase();
+        this.recurring = recurring;
+        this.labels = new LinkedChain<Label>();
+        Label[] given = labels.toArray(new Label[labels.size()]);
+        for (Label label : given)
+        {
+            if (!this.labels.contains(label))
+            {
+                this.labels.addToEnd(label);
+            }
+        }
+    }
+
+    /**
      * Checks whether a string is an allowed energy level.
      *
      * @param energy the text to check
@@ -122,6 +183,14 @@ public class Task
     public String getEnergy()
     {
         return energy;
+    }
+
+    /**
+     *@return true if task recurs
+     */
+    public boolean isRecurring()
+    {
+        return recurring;
     }
 
     /**
@@ -202,6 +271,7 @@ public class Task
         return description.equalsIgnoreCase(other.getDescription())
             && minutes == other.getMinutes()
             && energy.equals(other.getEnergy())
+            && recurring == other.isRecurring()
             && sameLabels(other.getLabels());
     }
 
