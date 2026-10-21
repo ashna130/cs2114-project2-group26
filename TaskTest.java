@@ -390,6 +390,8 @@ public class TaskTest {
             email.toString());
         assertEquals("Read (30 min, high) @home",
             new Task("Read", 30, "high", tag("home")).toString());
+        assertEquals("Fold laundry (15 min, low) @chores [recurring] ", 
+                     laundry.toString());
     }
 
     /**
