@@ -52,6 +52,7 @@ public class LooseEnds
     // Undo (stretch goal): the last task deleted or completed.
     private Task undoTask;
     private CompletedEntry undoEntry; // null if the last action was delete
+    private Task undoRecurReplace;
 
     // Used by the text menu.
     private Scanner in;
@@ -101,18 +102,20 @@ public class LooseEnds
      * @param minutes how long it takes, 1 to 480
      * @param energy  "low" or "high"
      * @param labels  labels for the task; at least one
+     * @param recurring whether or not task is recurring
      * @return the new task, or null if any value was invalid
      */
     public Task addTask(
         String desc,
         int minutes,
         String energy,
-        LinkedChain<Label> labels)
+        LinkedChain<Label> labels,
+        boolean recurring)
     {
         Task task;
         try
         {
-            task = new Task(desc, minutes, energy, labels);
+            task = new Task(desc, minutes, energy, labels, recurring);
         }
         catch (IllegalArgumentException e)
         {
@@ -121,6 +124,23 @@ public class LooseEnds
         openTasks.add(task);
         addLabelsToBag(task);
         return task;
+    }
+
+    /**
+     * Creates task that is not recurring.
+     * @param desc    what the task is
+     * @param minutes how long it takes, 1 to 480
+     * @param energy  "low" or "high"
+     * @param labels  labels for the task; at least one
+     * @return the new task, or null if any value was invalid
+     */
+    public Task addTask(
+        String desc,
+        int minutes,
+        String energy,
+        LinkedChain<Label> labels)
+    {
+        return addTask(desc, minutes, energy, labels, false);
     }
 
     /**
@@ -234,6 +254,18 @@ public class LooseEnds
         donePile.add(entry);
         undoTask = t;
         undoEntry = entry;
+        undoRecurReplace = null;
+        if (t.isRecurring()) {
+            LinkedChain<Label> labels = new LinkedChain<Label>();
+            for (Label label : labelsOf(t)) {
+                labels.addToEnd(label);
+            }
+            Task replacement = new Task(t.getDescription(), t.getMinutes(),
+                                        t.getEnergy(). labels, true);
+            openTasks.add(replacement);
+            addLabelsToBag(replacement);
+            undoRecurReplace = replacement;
+        }
         return true;
     }
 
@@ -254,12 +286,30 @@ public class LooseEnds
         }
         Task task = undoTask;
         CompletedEntry entry = undoEntry;
-        undoTask = null;
-        undoEntry = null;
-        if (entry != null && !donePile.remove(entry))
+        Task replacement = undoRecurReplace;
+        if (entry != null && !donePile.contains(entry))
+        {
+            undoTask = null;
+            undoEntry = null;
+            undoRecurReplace = null;
+            return false;
+        }
+        if (entry != null && !donePile.contains(entry))
         {
             return false;
         }
+        if (replacement != null) {
+            if (!openTasks.remoce(replacement)) {
+                if (entry != null) {
+                    donePile.add(entry);
+                }
+                return false;
+            }
+            removeLabelsFromBag(replacement);
+        }
+        undoTask = null;
+        undoEntry = null;
+        undoRecurReplace = null;
         openTasks.add(task);
         addLabelsToBag(task);
         return true;
