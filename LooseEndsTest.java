@@ -23,6 +23,7 @@ public class LooseEndsTest
     private LooseEnds app;
     private LinkedChain<Label> laptop;
     private LinkedChain<Label> laptopPhone;
+    private LinkedChain<Label> chores;
 
     /**
      * Makes a chain with one label.
@@ -48,6 +49,8 @@ public class LooseEndsTest
         laptopPhone = new LinkedChain<Label>();
         laptopPhone.add(new Label("@laptop"));
         laptopPhone.add(new Label("@phone"));
+        chores = new LinkedChain<Label>();
+        chores.add(new Label("@errand"));
     }
 
     // ---------------------------------------------------------- constructors
@@ -246,6 +249,33 @@ public class LooseEndsTest
         assertEquals(day, app.getDonePile()[0].getCompletedDate());
     }
 
+    @Test
+    public void testCompleteRecurringTask()
+    {
+        Task laundry = app.addTask("Fold laundry", 15, "low", chores, true);
+        assertNotNull(laundry);
+        assertTrue(app.completeTask(laundry));
+        assertEquals(1, app.countDone());
+        assertEquals(1, app.countOpen());
+        Task recurred = app.getOpenTasks()[0];
+        assertTrue(recurred.isRecurring());
+        assertEquals(laundry.getDescription(), recurred.getDescription());
+        assertEquals(laundry.getMinutes(), recurred.getMinutes());
+        assertEquals(laundry.getEnergy(), recurred.getEnergy());
+        assertTrue(recurred.hasLabel(new Label("@errand");
+    }
+
+    @Test
+    public void testCompleteTaskTwice()
+    {
+        Task laundry = app.addTask("Fold laundry", 15, "low", chores, true);
+        assertTrue(app.completeTask(laundry));
+        assertFalse(app.completeTask(laundry));
+        assertEquals(0, app.countOpen());
+        assertEquals(1, app.countDone());
+        assertEquals(0, app.countLabel(new Label("@errand")));
+    }
+
     // -------------------------------------------------- undo (stretch goal)
 
     @Test
@@ -286,6 +316,19 @@ public class LooseEndsTest
         assertFalse(app.undo());            // entry was cleared
         assertEquals(0, app.countOpen());
         assertNull(app.undoDescription());
+    }
+
+    @Test
+    public void testUndoRecurring()
+    {
+        Task laundry = app.addTask("Fold laundry", 15, "low", chores, true);
+        assertTrue(app.completeTask(task));
+        assertEquals(0, app.countOpen());
+        assertEquals(1, app.countDone());
+        assertTrue(app.undo());
+        assertEquals(1, app.countOpen());
+        assertEquals(0, app.countDone());
+        assertEquals(laundry, app.getOpenTasks()[0]);
     }
 
     // -------------------------------------------------------------- whatNow
