@@ -211,7 +211,7 @@ k = distinct labels, L = labels on one task (small, usually 1–3).
 
 Task, Label, and CompletedEntry
 
-**| Method | Big O | Why |**
+| Method | Big O | Why |
 | --- | --- | --- |
 | Task.getDescription() | O(L²) | Copies labels and checks for duplicates with contains method |
 | Task.getMinutes() | Returns field |
@@ -234,7 +234,7 @@ Task, Label, and CompletedEntry
 
 LooseEnds
 
-**| Method | Big O | Why |**
+| Method | Big O | Why |
 | --- | --- | --- |
 | addTask() | O(L²) | Creates task, copies labels, adds labels to bag |
 | isOpen(task) | O(nL²) | Searches open tasks |
