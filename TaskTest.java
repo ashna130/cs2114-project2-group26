@@ -8,13 +8,15 @@ import org.junit.Test;
  * bad-input case for each public method.
  *
  * @author Ashna, Prateek
- * @version October 14, 2026
+ * @version October 20, 2026
  */
 public class TaskTest {
     private Task task1;
     private LinkedChain<Label> labels1;
     private LinkedChain<Label> labels;
     private Task email;
+    private Task laundry;
+    private LinkedChain<Label> labels2;
 
     /**
      * Makes a chain with one label.
@@ -45,6 +47,10 @@ public class TaskTest {
         labels.addToEnd(new Label("@laptop"));
         labels.addToEnd(new Label("@phone"));
         email = new Task("  Email advisor ", 15, " LOW ", labels);
+
+        labels2 = new LinkedChain<Label>();
+        labels2.add(new Label("@chores"));
+        laundry = new Task("Fold laundry", 15, "low", labels2, true);
     }
 
     /**
@@ -75,6 +81,7 @@ public class TaskTest {
         }
         assertNotNull(exception);
     }
+    
     /**
      * Test empty labels.
      */
@@ -91,6 +98,9 @@ public class TaskTest {
         assertNotNull(exception);
     }
 
+    /**
+     * Test default constructor.
+     */
     @Test
     public void testConstructor()
     {
@@ -98,8 +108,12 @@ public class TaskTest {
         assertEquals(15, email.getMinutes());
         assertEquals("low", email.getEnergy());
         assertEquals(2, email.getLabels().size());
+        assertFalse(email.isRecurring());
     }
 
+    /**
+     * Test constructor copies labels.
+     */
     @Test
     public void testConstructorCopiesLabels()
     {
@@ -108,6 +122,9 @@ public class TaskTest {
         assertNotSame(labels, email.getLabels());
     }
 
+    /**
+     * Tests constructor with duplicate labels.
+     */
     @Test
     public void testConstructorDuplicateLabels()
     {
@@ -118,6 +135,9 @@ public class TaskTest {
             .getLabels().size());
     }
 
+    /**
+     * Tests constructor when no labels inputted.
+     */
     @Test
     public void testConstructorNoLabels()
     {
@@ -141,6 +161,9 @@ public class TaskTest {
         }
     }
 
+    /**
+     * Tests contructor with bad description input.
+     */
     @Test
     public void testConstructorBadDescription()
     {
@@ -173,6 +196,9 @@ public class TaskTest {
         }
     }
 
+    /**
+     * Tests constructor with bad minutes input.
+     */
     @Test
     public void testConstructorBadMinutes()
     {
@@ -208,6 +234,9 @@ public class TaskTest {
             new Task("Read", 480, "low", tag("home")).getMinutes());
     }
 
+    /**
+     * Tests contructor with bad energy input.
+     */
     @Test
     public void testConstructorBadEnergy()
     {
@@ -242,6 +271,18 @@ public class TaskTest {
             new Task("Read", 15, "High", tag("home")).getEnergy());
     }
 
+    /**
+     * Tests constructor when task is recurring.
+     */
+    @Test
+    public void testConstructorRecurring()
+    {
+        assertTrue(laundry.isRecurring());
+    }
+
+    /**
+     * Tests isValidEnergy.
+     */
     @Test
     public void testIsValidEnergy()
     {
@@ -251,6 +292,9 @@ public class TaskTest {
         assertFalse(Task.isValidEnergy(null));
     }
 
+    /**
+     * Tests hasLabel.
+     */
     @Test
     public void testHasLabel()
     {
@@ -259,6 +303,9 @@ public class TaskTest {
         assertFalse(email.hasLabel(null));
     }
 
+    /**
+     * Tests addLabel.
+     */
     @Test
     public void testAddLabel()
     {
@@ -267,6 +314,9 @@ public class TaskTest {
         assertTrue(email.hasLabel(new Label("errand")));
     }
 
+    /**
+     * Tests addLabel bad inputs.
+     */
     @Test
     public void testAddLabelBadInput()
     {
@@ -275,6 +325,9 @@ public class TaskTest {
         assertEquals(2, email.getLabels().size());
     }
 
+    /**
+     * Tests removeLabel.
+     */
     @Test
     public void testRemoveLabel()
     {
@@ -283,6 +336,9 @@ public class TaskTest {
         assertFalse(email.hasLabel(new Label("phone")));
     }
 
+    /**
+     * Tests removeLabel bad inputs.
+     */
     @Test
     public void testRemoveLabelBadInput()
     {
@@ -295,6 +351,9 @@ public class TaskTest {
         assertEquals(1, one.getLabels().size());
     }
 
+    /**
+     * Tests equals when objects are equal.
+     */
     @Test
     public void testEquals()
     {
@@ -306,6 +365,9 @@ public class TaskTest {
         assertEquals(email, email);
     }
 
+    /**
+     * Tests equals with bad inputs.
+     */
     @Test
     public void testEqualsBadInput()
     {
@@ -318,6 +380,9 @@ public class TaskTest {
             new Task("Email advisor", 15, "low", tag("home")));
     }
 
+    /**
+     * Tests toString.
+     */
     @Test
     public void testToString()
     {
@@ -327,6 +392,9 @@ public class TaskTest {
             new Task("Read", 30, "high", tag("home")).toString());
     }
 
+    /**
+     * Tests getters when task has high energy.
+     */
     @Test
     public void testGettersHighEnergy()
     {
@@ -335,5 +403,14 @@ public class TaskTest {
         assertEquals(480, t.getMinutes());
         assertEquals("high", t.getEnergy());
         assertNotNull(t.getLabels());
+    }
+
+    /**
+     * Tests equals concerning recurring tasks.
+     */
+    public void testRecurringEquals()
+    {
+        Task recurringEmail = new Task("  Email advisor ", 15, " LOW ", labels, true);
+        assertNotEquals(recurringEmail, email);
     }
 }
