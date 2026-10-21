@@ -210,7 +210,9 @@ k = distinct labels, L = labels on one task (small, usually 1–3).
 | `mostAvoidedLabel` (stretch) | — | O(m·k + k·d·L) | Distinct labels, then open and done counts for each. |
 
 Task, Label, and CompletedEntry
+
 **| Method | Big O | Why |**
+| --- | --- | --- |
 | Task.getDescription() | O(L²) | Copies labels and checks for duplicates with contains method |
 | Task.getMinutes() | Returns field |
 | Task.getEnergy() | Returns field |
@@ -231,7 +233,9 @@ Task, Label, and CompletedEntry
 | CompletedEntry.toString() | O(L) | Formats task with labels |
 
 LooseEnds
+
 **| Method | Big O | Why |**
+| --- | --- | --- |
 | addTask() | O(L²) | Creates task, copies labels, adds labels to bag |
 | isOpen(task) | O(nL²) | Searches open tasks |
 | addLabel(task, label) | O(nL²+m) | Checks if task is open, its labels, and then updates label bag |
