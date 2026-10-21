@@ -316,6 +316,9 @@ public class Task
         {
             sb.append(" ").append(label);
         }
+        if (isRecurring()) {
+            sb.append(" [recurring] ");
+        }
         return sb.toString();
     }
 }
