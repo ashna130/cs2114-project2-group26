@@ -209,6 +209,48 @@ k = distinct labels, L = labels on one task (small, usually 1–3).
 | `undo` (stretch) | — | O(d + L) | One done-pile remove plus re-adding labels. |
 | `mostAvoidedLabel` (stretch) | — | O(m·k + k·d·L) | Distinct labels, then open and done counts for each. |
 
+Task, Label, and CompletedEntry
+**| Method | Big O | Why |**
+| Task.getDescription() | O(L²) | Copies labels and checks for duplicates with contains method |
+| Task.getMinutes() | Returns field |
+| Task.getEnergy() | Returns field |
+| Task.getLabels() | Returns field |
+| Task.isRecurring() | Returns field |
+| Task.setRecurring() | O(1) | Updates field |
+| Task.hasLabel(label) | O(L) | Searches for labels |
+| Task.addLabel(label) | O(L) | Checks for duplicates, then adds |
+| Task.removeLabel(label) | O(L) | Searches for label to be removed |
+| Task.equals(other) | O(L²) | Compares labels chains with counts |
+| Task.toString() | O(L) | Goes through labels |
+| Label.equals(other) | O(L) | Compares the names of labels |
+| Label.getName() | O(1) | Returns field |
+|Label.toString() | O(1) | Returns name |
+| CompletedEntry.getTask() | O(1) | Returns field |
+| CompletedEntry.getCompletedDate() | O(1) | Returns field |
+| CompletedEntry.equals(other) | O(L²) | Compares task and completion date |
+| CompletedEntry.toString() | O(L) | Formats task with labels |
+
+LooseEnds
+**| Method | Big O | Why |**
+| addTask() | O(L²) | Creates task, copies labels, adds labels to bag |
+| isOpen(task) | O(nL²) | Searches open tasks |
+| addLabel(task, label) | O(nL²+m) | Checks if task is open, its labels, and then updates label bag |
+| removeLabel(task, label) | O(nL²+m) | Checks if task is open, then removes its label |
+| deleteTask(task) | O(nL²+Lm) | Removes task and search label bag for each of its labels |
+| completeTask(task) | O(nL²+Lm) | Removes task, updates its labels, adds completed entry |
+| undo() | O(dL²+nL²+Lm) | Removes completed entry if needed, restores task and labels |
+| whatNow() | O(nL) | Checks filters and builds list of tasks |
+| another() | O(nL) | Searches for another match, excluding previous pick |
+| mostRestrictiveFilter() | Checks each filter against open tasks |
+| countOpen() | O(1) | Returns the open-chain size |
+| countLabel(label) | O(m) | Counts matching labels in label bag |
+| countDone() | O(1) | Returns done-chain size |
+| doneSummary() | O(dl+k²) | Collects completed task labels and counts |
+| weeklySummary() | O(dl+k²) | Checks dates, minutes, and labels |
+| clearDone | O(1) | Clears done chain |
+| getOpenTasks() | O(n) | Copies open tasks into array |
+| getDonePile() | O(d) | Copies completed entries into array |
+
 ### Stretch goals from our scope
 
 | Stretch goal | Decision |
