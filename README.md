@@ -249,12 +249,12 @@ k = distinct labels, L = labels on one task (small, usually 1–3).
 | `LinkedChain.java` | CS 2114 staff | Provided; used unchanged |
 | `lib/*.jar` | Ashna | Added JUnit 4 |
 | `Label.java` | Ashna, Prateek | Ashna wrote the constructor, methods, and class comment; Prateek revised normalization (`@`, length, spaces) (GenAI-assisted) |
-| `Task.java` | Ashna, Prateek | Ashna wrote the first version, the last-label rule, and the "at least one label" check, and fixed the energy check and typos; Prateek made the same fixes in parallel and added label copying, `hasLabel`, `equals`, and `toString` (GenAI-assisted); merged together |
+| `Task.java` | Ashna, Prateek | Ashna wrote the first version, the last-label rule, and the "at least one label" check, and fixed the energy check and typos, and created recurring task methods; Prateek made the same fixes in parallel and added label copying, `hasLabel`, `equals`, and `toString` (GenAI-assisted); merged together |
 | `CompletedEntry.java` | Prateek | Wrote (GenAI-assisted) |
 | `LooseEnds.java` | Prateek, Ashna | Wrote app logic, menu, and stretch goals (GenAI-assisted), following Ashna's class design and method signatures from Deliverable 2 |
 | `LinkedChainTest.java` | Prateek | Wrote from our test plan §1 (GenAI-assisted) |
 | `LabelTest.java` | Ashna, Prateek | Ashna wrote the constructor, null/empty, `toString`, and `equals` tests; Prateek added normalization, length, and space tests  |
-| `TaskTest.java` | Ashna, Prateek | Ashna wrote the getters, null-description, and no-labels tests; Prateek added the rest and adjusted `testGetters` for label copying (GenAI-assisted) |
+| `TaskTest.java` | Ashna, Prateek | Ashna wrote the getters, null-description, recurring tasks, and no-labels tests; Prateek added the rest and adjusted `testGetters` for label copying (GenAI-assisted) |
 | `CompletedEntryTest.java` | Prateek | Wrote (GenAI-assisted) |
 | `LooseEndsTest.java` | Prateek | Wrote from our test plan §3–§4 (GenAI-assisted) |
 
